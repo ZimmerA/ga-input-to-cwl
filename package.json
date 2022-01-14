@@ -1,0 +1,22 @@
+{
+  "name": "ga-input-to-cwl",
+  "version": "1.0.0",
+  "description": "Reads .ga files to generate a cwl tool wrapper with the same inputs as the ga file",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "node dist/main.js",
+    "build": "rimraf dist/ && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-node": "^10.4.0",
+    "ts-standard": "^11.0.0",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "cwl-ts-auto": "^0.1.2",
+    "rimraf": "^3.0.2"
+  }
+}
