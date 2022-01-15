@@ -11,12 +11,14 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/js-yaml": "^4.0.5",
     "ts-node": "^10.4.0",
     "ts-standard": "^11.0.0",
     "typescript": "^4.5.4"
   },
   "dependencies": {
     "cwl-ts-auto": "^0.1.3",
+    "js-yaml": "^4.1.0",
     "rimraf": "^3.0.2"
   }
 }

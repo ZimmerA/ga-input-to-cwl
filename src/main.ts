@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as cwlTsAuto from 'cwl-ts-auto'
+import * as yaml from 'js-yaml'
 
 interface GAInputType {
   name: string
@@ -38,7 +39,7 @@ function mapGaTypeToCommandInputParameterType (gaType: string): cwlTsAuto.Comman
 function createCommandInputParameter (input: GAInputType): cwlTsAuto.CommandInputParameter {
   return new cwlTsAuto.CommandInputParameter({
     inputBinding: new cwlTsAuto.CommandLineBinding({ prefix: '--file ' + input.name, shellQuote: false }),
-    label: input.name,
+    id: input.name,
     type: mapGaTypeToCommandInputParameterType(input.type)
   })
 }
@@ -58,13 +59,13 @@ function generatePreprocessingStepSkeleton (): cwlTsAuto.CommandLineTool {
 
   const paramFileOuput = new cwlTsAuto.CommandOutputParameter({
     type: cwlTsAuto.CWLType.FILE,
-    label: 'paramFile',
+    id: 'paramFile',
     outputBinding: new cwlTsAuto.CommandOutputBinding({ glob: '$(runtime.outdir)/galaxyInput.yml' })
   })
 
   const inputDatFolderOuput = new cwlTsAuto.CommandOutputParameter({
     type: cwlTsAuto.CWLType.DIRECTORY,
-    label: 'inputDataFolder',
+    id: 'inputDataFolder',
     outputBinding: new cwlTsAuto.CommandOutputBinding({ glob: '$(runtime.outdir)' })
   })
   preprocessingStepSkeleton.outputs.push(paramFileOuput)
@@ -93,7 +94,7 @@ function main (): void {
   const preprocessingStep = generatePreprocessingStep(gaInputs)
 
   // Print out the resulting cwl
-  console.log(JSON.stringify(preprocessingStep.save(), null, 4))
+  console.log(yaml.dump(preprocessingStep.save()))
 }
 
 main()
