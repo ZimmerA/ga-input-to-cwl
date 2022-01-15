@@ -26,13 +26,12 @@ function main (): void {
   // generate preprocessing step
   const preprocessingStep =
   new cwlTsAuto.CommandLineTool({
-    class_: cwlTsAuto.CommandLineTool_class.COMMANDLINETOOL,
     baseCommand: 'cwl-galaxy-parser',
     cwlVersion: cwlTsAuto.CWLVersion.V1_2,
     requirements: [
-      new cwlTsAuto.InlineJavascriptRequirement({ class_: cwlTsAuto.InlineJavascriptRequirement_class.INLINEJAVASCRIPTREQUIREMENT }),
-      new cwlTsAuto.ShellCommandRequirement({ class_: cwlTsAuto.ShellCommandRequirement_class.SHELLCOMMANDREQUIREMENT }),
-      new cwlTsAuto.DockerRequirement({ class_: cwlTsAuto.DockerRequirement_class.DOCKERREQUIREMENT, dockerImageId: 'cwl-galaxy-parser', dockerFile: '$include: ./Dockerfile' })
+      new cwlTsAuto.InlineJavascriptRequirement({}),
+      new cwlTsAuto.ShellCommandRequirement({}),
+      new cwlTsAuto.DockerRequirement({ dockerImageId: 'cwl-galaxy-parser', dockerFile: '$include: ./Dockerfile' })
     ],
     inputs: [],
     outputs: []
