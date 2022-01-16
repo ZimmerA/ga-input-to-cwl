@@ -8,15 +8,23 @@ export interface GAInputType {
   type: string
 }
 
-export const inputTypes = ['data_input', 'data_collection_input']
+export const inputTypes = ['data_input', 'data_collection_input', 'text', 'boolean', 'float', 'integer']
 
 export function extractGaInputsFromGaFile (gaFile: any): GAInputType[] {
   const gaInputs: GAInputType[] = []
 
   for (const input in gaFile.steps) {
     const step = gaFile.steps[input]
-    const stepType = step.type
+    let stepType: string = step.type
+
+    if (stepType === 'parameter_input') {
+      stepType = JSON.parse(step.tool_state).parameter_type
+    }
+
     if (inputTypes.includes(stepType)) {
+      if (step.label == null) {
+        throw Error('Unnamed input detected, aborting. Please speficy a label for all inputs!')
+      }
       gaInputs.push({ name: step.label, type: stepType })
     }
   }
@@ -30,6 +38,18 @@ export function mapGaTypeToCommandInputParameterType (gaType: string): cwlTsAuto
     }
     case 'data_collection_input': {
       return new cwlTsAuto.CommandInputArraySchema({ items: cwlTsAuto.CWLType.FILE, type: cwlTsAuto.enum_d062602be0b4b8fd33e69e29a841317b6ab665bc.ARRAY })
+    }
+    case 'text': {
+      return cwlTsAuto.PrimitiveType.STRING
+    }
+    case 'boolean': {
+      return cwlTsAuto.PrimitiveType.BOOLEAN
+    }
+    case 'float': {
+      return cwlTsAuto.PrimitiveType.FLOAT
+    }
+    case 'integer': {
+      return cwlTsAuto.PrimitiveType.INT
     }
     default: {
       throw Error('Input type not supported: ' + gaType)

@@ -1,8 +1,0 @@
-Input1:
-  class: File
-  location: enter location
-Input2:
-  - class: File
-    location: enter location
-  - class: File
-    location: enter location

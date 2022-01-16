@@ -11,7 +11,7 @@ function generateJobFileInput (gaInput: GAInputType): any {
       const input = [fileInput, fileInput]
       return input
     } default: {
-      throw Error('Input type not supported: ' + gaInput.name)
+      return 'enter value'
     }
   }
 }
