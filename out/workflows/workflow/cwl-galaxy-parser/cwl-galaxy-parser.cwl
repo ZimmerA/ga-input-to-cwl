@@ -29,4 +29,3 @@ requirements:
     dockerImageId: cwl-galaxy-parser
 cwlVersion: v1.2
 baseCommand: cwl-galaxy-parser
-

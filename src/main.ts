@@ -1,100 +1,62 @@
 import * as fs from 'fs'
-import * as cwlTsAuto from 'cwl-ts-auto'
-import * as yaml from 'js-yaml'
+import { extractGaInputsFromGaFile, writeOutput } from './common'
+import { generateJobFile } from './jobFile'
+import { generatePreprocessingTool } from './preprocessingTool'
+import { generateRun } from './run'
+import commandLineArgs from 'command-line-args'
+import commandLineUsage from 'command-line-usage'
+import * as path from 'path'
 
-interface GAInputType {
-  name: string
-  type: string
-}
+const optionDefinitions = [
+  { name: 'gaFile', alias: 'i', type: String, defaultOption: true, description: 'Path to the Galaxy workflow file to process' },
+  { name: 'runName', alias: 'n', type: String, description: 'Name of the resulting run (default: name of the .ga file)' },
+  { name: 'outFolder', alias: 'o', type: String, defaultValue: './out', description: 'Path to place the results in (default: ./out)' },
+  { name: 'help', alias: 'h', type: Boolean, description: 'Prints this dialogue' }
+]
 
-const inputTypes = ['data_input', 'data_collection_input']
-
-function extractGaInputs (gaFile: any): GAInputType[] {
-  const gaInputs: GAInputType[] = []
-
-  for (const input in gaFile.steps) {
-    const step = gaFile.steps[input]
-    const stepType = step.type
-    if (inputTypes.includes(stepType)) {
-      gaInputs.push({ name: step.label, type: stepType })
-    }
+const sections = [
+  {
+    header: 'Galaxy workflow to CWL',
+    content: 'Generates an ARC ready CWL workflow from a Galaxy workflow(.ga) file'
+  },
+  {
+    header: 'Options',
+    optionList: optionDefinitions
   }
-  return gaInputs
-}
-
-function mapGaTypeToCommandInputParameterType (gaType: string): cwlTsAuto.CommandInputParameterProperties['type'] {
-  switch (gaType) {
-    case 'data_input': {
-      return cwlTsAuto.CWLType.FILE
-    }
-    case 'data_collection_input': {
-      return new cwlTsAuto.CommandInputArraySchema({ items: cwlTsAuto.CWLType.FILE, type: cwlTsAuto.enum_d062602be0b4b8fd33e69e29a841317b6ab665bc.ARRAY })
-    }
-    default: {
-      throw Error('Invalid input type: ' + gaType)
-    }
-  }
-}
-
-function createCommandInputParameter (input: GAInputType): cwlTsAuto.CommandInputParameter {
-  return new cwlTsAuto.CommandInputParameter({
-    inputBinding: new cwlTsAuto.CommandLineBinding({ prefix: '--file ' + input.name, shellQuote: false }),
-    id: input.name,
-    type: mapGaTypeToCommandInputParameterType(input.type)
-  })
-}
-
-function generatePreprocessingStepSkeleton (): cwlTsAuto.CommandLineTool {
-  const preprocessingStepSkeleton = new cwlTsAuto.CommandLineTool({
-    baseCommand: 'cwl-galaxy-parser',
-    cwlVersion: cwlTsAuto.CWLVersion.V1_2,
-    requirements: [
-      new cwlTsAuto.InlineJavascriptRequirement({}),
-      new cwlTsAuto.ShellCommandRequirement({}),
-      new cwlTsAuto.DockerRequirement({ dockerImageId: 'cwl-galaxy-parser', dockerFile: '$include: ./Dockerfile' })
-    ],
-    inputs: [],
-    outputs: []
-  })
-
-  const paramFileOuput = new cwlTsAuto.CommandOutputParameter({
-    type: cwlTsAuto.CWLType.FILE,
-    id: 'paramFile',
-    outputBinding: new cwlTsAuto.CommandOutputBinding({ glob: '$(runtime.outdir)/galaxyInput.yml' })
-  })
-
-  const inputDatFolderOuput = new cwlTsAuto.CommandOutputParameter({
-    type: cwlTsAuto.CWLType.DIRECTORY,
-    id: 'inputDataFolder',
-    outputBinding: new cwlTsAuto.CommandOutputBinding({ glob: '$(runtime.outdir)' })
-  })
-  preprocessingStepSkeleton.outputs.push(paramFileOuput)
-  preprocessingStepSkeleton.outputs.push(inputDatFolderOuput)
-  return preprocessingStepSkeleton
-}
-
-function generatePreprocessingStep (gaInputs: GAInputType[]): cwlTsAuto.CommandLineTool {
-  const preprocessingStep = generatePreprocessingStepSkeleton()
-
-  for (const input of gaInputs) {
-    preprocessingStep.inputs.push(createCommandInputParameter(input))
-  }
-
-  return preprocessingStep
-}
+]
 
 function main (): void {
-  // Read the galaxy Workflow file
-  const gaWorkflowJson = JSON.parse(fs.readFileSync(process.argv[2]).toString())
+  const usage = commandLineUsage(sections)
+  const options = commandLineArgs(optionDefinitions)
 
-  // Extract the input descriptions from the galaxy workflow
-  const gaInputs = extractGaInputs(gaWorkflowJson)
+  if (options.help === true) {
+    console.log(usage)
+    return
+  }
+  if (options.gaFile == null) {
+    return
+  }
 
-  // Generate the cwl tool using the galaxy input descriptions
-  const preprocessingStep = generatePreprocessingStep(gaInputs)
+  if (options.runName == null || options.runName === '') {
+    options.runName = path.parse(options.gaFile).name
+  }
 
-  // Print out the resulting cwl
-  console.log(yaml.dump(preprocessingStep.save()))
+  // Read the Galaxy workflow file
+  const gaWorkflowJson = JSON.parse(fs.readFileSync(options.gaFile).toString())
+
+  // Extract the input descriptions from the Galaxy workflow file
+  const gaInputs = extractGaInputsFromGaFile(gaWorkflowJson)
+
+  // Generate the preprocessing cwl tool using the Galaxy input descriptions
+  const preprocessingTool = generatePreprocessingTool(gaInputs)
+
+  // generate the run using the Galaxy input descriptions
+  const run = generateRun(options.runName, gaInputs)
+
+  // generate an example job file
+  const jobFileContent = generateJobFile(gaInputs)
+
+  writeOutput(options.outFolder, options.runName, preprocessingTool, run, jobFileContent, options.gaFile)
 }
 
 main()
