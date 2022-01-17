@@ -34,18 +34,18 @@ function main (): void {
     return
   }
 
-  if (options.gaFile == null) {
+  if (options.workflowFile == null) {
     console.log('Please specify a workflow file')
     return
   }
 
   if (options.runName == null || options.runName === '') {
-    options.runName = path.parse(options.gaFile).name
+    options.runName = path.parse(options.workflowFile).name
   }
 
   try {
     // Read the Galaxy workflow file
-    const gaWorkflowJson = JSON.parse(fs.readFileSync(options.gaFile).toString())
+    const gaWorkflowJson = JSON.parse(fs.readFileSync(options.workflowFile).toString())
 
     // Extract the input descriptions from the Galaxy workflow file
     const gaInputs = extractGaInputsFromGaFile(gaWorkflowJson)
@@ -59,7 +59,7 @@ function main (): void {
     // generate an example job file
     const jobFileContent = generateJobFile(gaInputs)
 
-    writeOutput(options.outFolder, options.runName, preprocessingTool, run, jobFileContent, options.gaFile)
+    writeOutput(options.outFolder, options.runName, preprocessingTool, run, jobFileContent, options.workflowFile)
   } catch (e) {
     console.log(e)
   }
