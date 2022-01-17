@@ -8,7 +8,7 @@ import commandLineUsage from 'command-line-usage'
 import * as path from 'path'
 
 const optionDefinitions = [
-  { name: 'gaFile', alias: 'i', type: String, defaultOption: true, description: 'Path to the Galaxy workflow file to process' },
+  { name: 'workflowFile', alias: 'i', type: String, defaultOption: true, description: 'Path to the Galaxy workflow file to process' },
   { name: 'runName', alias: 'n', type: String, description: 'Name of the resulting run (default: name of the .ga file)' },
   { name: 'outFolder', alias: 'o', type: String, defaultValue: './out', description: 'Path to place the results in (default: ./out)' },
   { name: 'help', alias: 'h', type: Boolean, description: 'Prints this dialogue' }
@@ -33,7 +33,9 @@ function main (): void {
     console.log(usage)
     return
   }
+
   if (options.gaFile == null) {
+    console.log('Please specify a workflow file')
     return
   }
 
@@ -41,22 +43,26 @@ function main (): void {
     options.runName = path.parse(options.gaFile).name
   }
 
-  // Read the Galaxy workflow file
-  const gaWorkflowJson = JSON.parse(fs.readFileSync(options.gaFile).toString())
+  try {
+    // Read the Galaxy workflow file
+    const gaWorkflowJson = JSON.parse(fs.readFileSync(options.gaFile).toString())
 
-  // Extract the input descriptions from the Galaxy workflow file
-  const gaInputs = extractGaInputsFromGaFile(gaWorkflowJson)
+    // Extract the input descriptions from the Galaxy workflow file
+    const gaInputs = extractGaInputsFromGaFile(gaWorkflowJson)
 
-  // Generate the preprocessing cwl tool using the Galaxy input descriptions
-  const preprocessingTool = generatePreprocessingTool(gaInputs)
+    // Generate the preprocessing cwl tool using the Galaxy input descriptions
+    const preprocessingTool = generatePreprocessingTool(gaInputs)
 
-  // generate the run using the Galaxy input descriptions
-  const run = generateRun(options.runName, gaInputs)
+    // generate the run using the Galaxy input descriptions
+    const run = generateRun(options.runName, gaInputs)
 
-  // generate an example job file
-  const jobFileContent = generateJobFile(gaInputs)
+    // generate an example job file
+    const jobFileContent = generateJobFile(gaInputs)
 
-  writeOutput(options.outFolder, options.runName, preprocessingTool, run, jobFileContent, options.gaFile)
+    writeOutput(options.outFolder, options.runName, preprocessingTool, run, jobFileContent, options.gaFile)
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 main()

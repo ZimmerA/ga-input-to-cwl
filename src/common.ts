@@ -8,7 +8,7 @@ export interface GAInputType {
   type: string
 }
 
-export const inputTypes = ['data_input', 'data_collection_input', 'text', 'boolean', 'float', 'integer']
+export const inputTypes = ['data_input', 'data_collection_input', 'text', 'boolean', 'float', 'integer', 'color']
 
 export function extractGaInputsFromGaFile (gaFile: any): GAInputType[] {
   const gaInputs: GAInputType[] = []
