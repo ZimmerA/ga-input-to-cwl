@@ -1,28 +1,34 @@
 {
-  "name": "ga-input-to-cwl",
-  "version": "1.0.0",
-  "description": "Reads .ga files to generate a cwl tool wrapper with the same inputs as the ga file",
+  "name": "ga-workflow-to-cwl",
+  "version": "0.1.0",
+  "description": "Reads .ga workflow files to generate a cwl workflows for ARCs",
+  "author": "Adrian Zimmer",
+  "license": "MIT",
   "main": "dist/main.js",
+  "preferGlobal": true,
+  "bin": {
+    "cwlgenerator": "dist/main.js"
+  },
+  "files": [
+    "/dist"
+  ],
   "scripts": {
     "start": "node dist/main.js",
     "build": "rimraf dist/ && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "MIT",
   "devDependencies": {
     "@types/command-line-args": "^5.2.0",
     "@types/command-line-usage": "^5.0.2",
     "@types/js-yaml": "^4.0.5",
     "ts-node": "^10.4.0",
     "ts-standard": "^11.0.0",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.4",
+    "rimraf": "^3.0.2"
   },
   "dependencies": {
     "command-line-args": "^5.2.0",
     "command-line-usage": "^6.1.1",
     "cwl-ts-auto": "^0.1.3",
-    "js-yaml": "^4.1.0",
-    "rimraf": "^3.0.2"
-  }
+    "js-yaml": "^4.1.0"
 }
