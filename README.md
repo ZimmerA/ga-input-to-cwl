@@ -1,5 +1,6 @@
 # galaxy-workflow-to-arc
 [![npm version](https://badge.fury.io/js/galaxy-workflow-to-arc.svg)](https://badge.fury.io/js/galaxy-workflow-to-arc)
+
 Generates an ARC ready CWL workflow and run from a Galaxy workflow(.ga) file 
 
 ## Installation
