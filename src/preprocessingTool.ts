@@ -28,11 +28,17 @@ function mapGaTypeToPrefix (gaType: string): string {
 }
 
 function createCommandInputParameter (input: GAInputType): cwlTsAuto.CommandInputParameter {
-  return new cwlTsAuto.CommandInputParameter({
-    inputBinding: new cwlTsAuto.CommandLineBinding({ prefix: (mapGaTypeToPrefix(input.type) + input.name), shellQuote: false }),
+  const inputParameter = new cwlTsAuto.CommandInputParameter({
+
     id: input.name,
     type: mapGaTypeToCommandInputParameterType(input.type)
   })
+  if (inputParameter.type instanceof cwlTsAuto.CommandInputArraySchema) {
+    inputParameter.type.inputBinding = new cwlTsAuto.CommandLineBinding({ prefix: (mapGaTypeToPrefix(input.type) + input.name), shellQuote: false })
+  } else {
+    inputParameter.inputBinding = new cwlTsAuto.CommandLineBinding({ prefix: (mapGaTypeToPrefix(input.type) + input.name), shellQuote: false })
+  }
+  return inputParameter
 }
 
 function generatePreprocessingToolSkeleton (): cwlTsAuto.CommandLineTool {
@@ -42,7 +48,8 @@ function generatePreprocessingToolSkeleton (): cwlTsAuto.CommandLineTool {
     requirements: [
       new cwlTsAuto.InlineJavascriptRequirement({}),
       new cwlTsAuto.ShellCommandRequirement({}),
-      new cwlTsAuto.DockerRequirement({ dockerImageId: 'cwl-galaxy-parser', dockerFile: '$include: ./Dockerfile' })
+      // "{...} as any" is a workaround to use the $include statement
+      new cwlTsAuto.DockerRequirement({ dockerImageId: 'cwl-galaxy-parser', dockerFile: { $include: './dockerfiles/cwl-galaxy-parser/Dockerfile' } as any })
     ],
     inputs: [],
     outputs: []

@@ -23,7 +23,7 @@ hints:
   DockerRequirement:
     dockerImageId: planemo
     dockerFile:
-      $include: ./Dockerfile
+      $include: ./dockerfiles/planemo-run/Dockerfile
 arguments:
     - valueFrom: "./workflow.ga"
       position: 1

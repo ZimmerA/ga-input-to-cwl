@@ -2,10 +2,12 @@ import * as fs from 'fs'
 import { extractGaInputsFromGaFile, writeOutput } from './common'
 import { generateJobFile } from './jobFile'
 import { generatePreprocessingTool } from './preprocessingTool'
-import { generateRun } from './run'
 import commandLineArgs from 'command-line-args'
 import commandLineUsage from 'command-line-usage'
 import * as path from 'path'
+import { generateWorkflow } from './workflow'
+import * as cwlTsAuto from 'cwl-ts-auto'
+import { generateRun } from './run'
 
 const optionDefinitions = [
   { name: 'workflowFile', alias: 'i', type: String, defaultOption: true, description: 'Path to the Galaxy workflow file to process' },
@@ -52,16 +54,26 @@ function main (): void {
 
     // Generate the preprocessing cwl tool using the Galaxy input descriptions
     const preprocessingTool = generatePreprocessingTool(gaInputs)
+    cwlTsAuto.loadDocument('data/tools/planemo-run.cwl').then((planemoTool) => {
+      planemoTool = planemoTool as cwlTsAuto.CommandLineTool
 
-    // generate the run using the Galaxy input descriptions
-    const run = generateRun(options.runName, gaInputs)
+      // generate the run using the Galaxy input descriptions
+      const run = generateRun(options.runName, gaInputs)
 
-    // generate an example job file
-    const jobFileContent = generateJobFile(gaInputs)
+      const workflow = generateWorkflow(preprocessingTool, planemoTool, gaInputs)
+      // generate an example job file
+      const jobFileContent = generateJobFile(gaInputs)
 
-    writeOutput(options.outFolder, options.runName, preprocessingTool, run, jobFileContent, options.workflowFile)
+      writeOutput(options.outFolder, workflow, run, options.runName, jobFileContent, options.workflowFile)
+    }).catch((e) => {
+      throw e
+    })
   } catch (e) {
-    console.log(e)
+    if (e instanceof cwlTsAuto.ValidationException) {
+      console.log(e.toString())
+    } else {
+      console.log(e)
+    }
   }
 }
 

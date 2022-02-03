@@ -87,14 +87,16 @@ export function copyDir (src: string, dest: string): void {
   }
 }
 
-export function writeOutput (outFolder: string, runName: string, preprocessingTool: cwlTsAuto.CommandLineTool, run: cwlTsAuto.Workflow, jobFileContent: string, gaFilePath: string): void {
-  ensureDirectoryExists(path.join(outFolder, 'workflows', runName, 'cwl-galaxy-parser/cwl-galaxy-parser.cwl'))
-  fs.writeFileSync(path.join(outFolder, 'workflows', runName, '/cwl-galaxy-parser/cwl-galaxy-parser.cwl'), yaml.dump(preprocessingTool.save()))
-  copyDir('data/cwl-galaxy-parser', path.join(outFolder, 'workflows', runName, '/cwl-galaxy-parser'))
-  copyDir('data/planemo-run', path.join(outFolder, 'workflows', runName, 'planemo-run'))
-  fs.copyFileSync(gaFilePath, path.join(outFolder, 'workflows', runName, 'planemo-run/') + path.parse(gaFilePath).base)
+export function writeOutput (outFolder: string, workflow: cwlTsAuto.Workflow, run: cwlTsAuto.Workflow, runName: string, jobFileContent: string, gaFilePath: string): void {
+  copyDir('data/dockerfiles', path.join(outFolder, 'workflows', runName, '/dockerfiles'))
+  ensureDirectoryExists(path.join(outFolder, 'workflows', runName, 'workflow.cwl'))
+  const workflowOutput = workflow.save()
+  // workaround to deal with unnecessary id
+  delete workflowOutput.steps[1].run.id
+  fs.writeFileSync(path.join(outFolder, 'workflows', runName, 'workflow.cwl'), yaml.dump(workflowOutput))
+  fs.copyFileSync(gaFilePath, path.join(outFolder, 'workflows', runName, 'workflow.ga'))
 
-  ensureDirectoryExists(path.join(outFolder, 'run', runName, 'run.cwl'))
-  fs.writeFileSync(path.join(outFolder, 'run', runName, 'run.cwl'), yaml.dump(run.save()))
-  fs.writeFileSync(path.join(outFolder, 'run', runName, '/run.yml'), jobFileContent)
+  ensureDirectoryExists(path.join(outFolder, 'runs', runName, 'run.cwl'))
+  fs.writeFileSync(path.join(outFolder, 'runs', runName, 'run.cwl'), yaml.dump(run.save()))
+  fs.writeFileSync(path.join(outFolder, 'runs', runName, '/run.yml'), jobFileContent)
 }
