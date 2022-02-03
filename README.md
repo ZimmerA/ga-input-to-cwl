@@ -1,7 +1,21 @@
-# ga-input-to-cwl
-Reads .ga files to generate ARC ready cwl workflows + runs
+# galaxy-workflow-to-arc
+Generates an ARC ready CWL workflow and run from a Galaxy workflow(.ga) file 
 
-## Usage
-Execute `npm install && npm run build` to install dependencies and build the tool. Run `npm run start --silent -- data/workflow.ga` to generate the ARC ready workflow from your .ga file
+## Installation
+To use galaxy-workflow-to-arc, make sure node.js is installed. Then execute:
 
-Execute `npm run start --silent -- -h` for help
+`npm i -g galaxy-workflow-to-arc`
+## Usage:
+```
+Galaxy workflow to ARC
+
+  Generates an ARC ready CWL workflow and run from a Galaxy workflow(.ga) file 
+
+Options
+
+  -i, --workflowFile string   Path to the Galaxy workflow file to process       
+  -n, --runName string        Name of the resulting run and workflow (default:  
+                              name of the .ga file)                             
+  -o, --outFolder string      Path to place the results in (default: ./out)     
+  -h, --help                  Prints this dialogue      
+```

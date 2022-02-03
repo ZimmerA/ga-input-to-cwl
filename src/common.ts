@@ -88,7 +88,7 @@ export function copyDir (src: string, dest: string): void {
 }
 
 export function writeOutput (outFolder: string, workflow: cwlTsAuto.Workflow, run: cwlTsAuto.Workflow, runName: string, jobFileContent: string, gaFilePath: string): void {
-  copyDir('data/dockerfiles', path.join(outFolder, 'workflows', runName, '/dockerfiles'))
+  copyDir(path.join(__dirname, 'data/dockerfiles'), path.join(outFolder, 'workflows', runName, '/dockerfiles'))
   ensureDirectoryExists(path.join(outFolder, 'workflows', runName, 'workflow.cwl'))
   const workflowOutput = workflow.save()
   // workaround to deal with unnecessary id

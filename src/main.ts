@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 import * as fs from 'fs'
 import { extractGaInputsFromGaFile, writeOutput } from './common'
 import { generateJobFile } from './jobFile'
@@ -11,15 +12,15 @@ import { generateRun } from './run'
 
 const optionDefinitions = [
   { name: 'workflowFile', alias: 'i', type: String, defaultOption: true, description: 'Path to the Galaxy workflow file to process' },
-  { name: 'runName', alias: 'n', type: String, description: 'Name of the resulting run (default: name of the .ga file)' },
+  { name: 'runName', alias: 'n', type: String, description: 'Name of the resulting run and workflow (default: name of the .ga file)' },
   { name: 'outFolder', alias: 'o', type: String, defaultValue: './out', description: 'Path to place the results in (default: ./out)' },
   { name: 'help', alias: 'h', type: Boolean, description: 'Prints this dialogue' }
 ]
 
 const sections = [
   {
-    header: 'Galaxy workflow to CWL',
-    content: 'Generates an ARC ready CWL workflow from a Galaxy workflow(.ga) file'
+    header: 'Galaxy workflow to ARC',
+    content: 'Generates an ARC ready CWL workflow and run from a Galaxy workflow(.ga) file'
   },
   {
     header: 'Options',
@@ -54,7 +55,7 @@ function main (): void {
 
     // Generate the preprocessing cwl tool using the Galaxy input descriptions
     const preprocessingTool = generatePreprocessingTool(gaInputs)
-    cwlTsAuto.loadDocument('data/tools/planemo-run.cwl').then((planemoTool) => {
+    cwlTsAuto.loadDocument(path.join(__dirname, 'data/tools/planemo-run.cwl')).then((planemoTool) => {
       planemoTool = planemoTool as cwlTsAuto.CommandLineTool
 
       // generate the run using the Galaxy input descriptions
