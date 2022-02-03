@@ -1,0 +1,98 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "",
+    "format-version": "0.1",
+    "name": "CWL-Galaxy-Example",
+    "steps": {
+        "0": {
+            "annotation": "",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "",
+                    "name": "Input1"
+                }
+            ],
+            "label": "Input1",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "bottom": 631.03125,
+                "height": 61,
+                "left": 593.953125,
+                "right": 793.953125,
+                "top": 570.03125,
+                "width": 200,
+                "x": 593.953125,
+                "y": 570.03125
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"collection_type\": \"list\"}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "bfad3228-dd1e-4654-bb3a-2d1689958de3",
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/1.1.2",
+            "errors": null,
+            "id": 1,
+            "input_connections": {
+                "infile": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Replace Text",
+                    "name": "infile"
+                }
+            ],
+            "label": "output",
+            "name": "Replace Text",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "bottom": 654.03125,
+                "height": 92,
+                "left": 922.96875,
+                "right": 1122.96875,
+                "top": 562.03125,
+                "width": 200,
+                "x": 922.96875,
+                "y": 562.03125
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/1.1.2",
+            "tool_shed_repository": {
+                "changeset_revision": "ddf54b12c295",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"infile\": {\"__class__\": \"RuntimeValue\"}, \"replacements\": [{\"__index__\": 0, \"find_pattern\": \"Galaxy\", \"replace_pattern\": \"CWL\"}], \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.1.2",
+            "type": "tool",
+            "uuid": "8a2eb74c-5611-459d-9aba-04cdfc53b170",
+            "workflow_outputs": [
+                {
+                    "label": "testert",
+                    "output_name": "outfile",
+                    "uuid": "6ac3cde0-fe0d-4294-a736-d05501e25605"
+                }
+            ]
+        }
+    },
+    "tags": [],
+    "uuid": "473bb5bf-de8d-46b2-afbf-1073ae98bba5",
+    "version": 1
+}
